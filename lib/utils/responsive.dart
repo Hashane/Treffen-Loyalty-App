@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+// DEPRECATED: This file provided small responsive helpers used earlier in the
+// project. The app now uses `flutter_screenutil` for consistent, well-tested
+// scaling across platforms (mobile, tablet, web). Keep this file for
+// backwards-compatibility during migration, but prefer `flutter_screenutil`.
+
 /// Small responsive helpers.
 /// - Use `context.wp(0.5)` for 50% of screen width.
 /// - Use `context.hp(0.1)` for 10% of screen height.
@@ -29,3 +34,6 @@ extension Responsive on BuildContext {
   EdgeInsets paddedSymmetric({double horizontal = 0, double vertical = 0}) =>
       EdgeInsets.symmetric(horizontal: ssp(horizontal), vertical: ssp(vertical));
 }
+
+/// Small responsive helpers (legacy - prefer `flutter_screenutil`).
+/// - Use `16.w`, `16.h`, `16.r`, or `16.sp` from `flutter_screenutil` instead.

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../utils/responsive.dart';
 
 class EnhancedAuthScreen extends StatefulWidget {
@@ -180,14 +181,14 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
                 child: Transform.rotate(
                   angle: _logoRotationAnimation.value * 3.14159,
                   child: Container(
-                    width: context.wp(0.18),
-                    height: context.wp(0.18),
+                    width: ScreenUtil().screenWidth * 0.18,
+                    height: ScreenUtil().screenWidth * 0.18,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
+                      color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
                       borderRadius: context.radiu(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -196,7 +197,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
                     child: Icon(
                       Icons.loyalty,
                       color: Theme.of(context).colorScheme.onPrimary,
-                      size: context.wp(0.09),
+                      size: ScreenUtil().screenWidth * 0.09,
                     ),
                   ),
                 ),
@@ -215,7 +216,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
                   Text(
                     'Welcome Back',
                     style: TextStyle(
-                      fontSize: context.ssp(28),
+                      fontSize: 28.sp,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onPrimary,
                     ),
@@ -235,8 +236,8 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
               child: Text(
                 isLogin ? 'Sign in to continue' : 'Create your account',
                 style: TextStyle(
-                  fontSize: context.ssp(16),
-                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.8),
+                  fontSize: 16.sp,
+                  color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.8),
                 ),
               ),
             ),
@@ -321,7 +322,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
             suffixIcon: IconButton(
               icon: Icon(
                 showPassword ? Icons.visibility_off : Icons.visibility,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               onPressed: () {
                 setState(() => showPassword = !showPassword);
@@ -347,22 +348,22 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
               ),
             ),
 
-          SizedBox(height: context.ssp(24)),
+          SizedBox(height: 24.h),
 
           // Submit Button
           _buildSubmitButton(),
 
-          SizedBox(height: context.ssp(32)),
+          SizedBox(height: 32.h),
 
           // Divider
           _buildDivider(),
 
-          SizedBox(height: context.ssp(32)),
+          SizedBox(height: 32.h),
 
           // Social Login Buttons
           _buildSocialButtons(),
 
-          const SizedBox(height: 32),
+          SizedBox(height: 32.h),
 
           // Toggle Login/Signup
           _buildToggleButton(),
@@ -387,12 +388,12 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
         Text(
           label,
           style: TextStyle(
-            fontSize: context.ssp(14),
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.72),
+            fontSize: 14.sp,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.72),
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: context.ssp(8)),
+        SizedBox(height: 8.h),
         TextFormField(
           controller: controller,
           obscureText: obscureText,
@@ -400,38 +401,37 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+            hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+            ),
             prefixIcon: Icon(
               icon,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.45),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
             ),
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             border: OutlineInputBorder(
-              borderRadius: context.radiu(16),
+              borderRadius: BorderRadius.circular(16.r),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: context.radiu(16),
+              borderRadius: BorderRadius.circular(16.r),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: context.radiu(16),
+              borderRadius: BorderRadius.circular(16.r),
               borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: context.radiu(16),
+              borderRadius: BorderRadius.circular(16.r),
               borderSide: const BorderSide(color: Colors.red, width: 2),
             ),
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: context.ssp(16),
-              vertical: context.ssp(16),
-            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           ),
         ),
       ],
@@ -442,10 +442,10 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
     final cs = Theme.of(context).colorScheme;
 
     return Container(
-      height: context.ssp(56),
+      height: 56.h,
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [cs.primary, cs.secondary]),
-        borderRadius: context.radiu(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: cs.primary.withValues(alpha: 0.3),
@@ -459,12 +459,12 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: context.radiu(16)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
         ),
         child: isLoading
             ? SizedBox(
-                height: context.ssp(24),
-                width: context.ssp(24),
+                height: 24.h,
+                width: 24.w,
                 child: CircularProgressIndicator(
                   color: Theme.of(context).colorScheme.onPrimary,
                   strokeWidth: 2.5,
@@ -473,7 +473,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
             : Text(
                 isLogin ? 'Sign In' : 'Create Account',
                 style: TextStyle(
-                  fontSize: context.ssp(16),
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
@@ -485,18 +485,22 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
   Widget _buildDivider() {
     return Row(
       children: [
-        Expanded(child: Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.12))),
+        Expanded(
+          child: Divider(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12)),
+        ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: context.ssp(16)),
           child: Text(
             'Or continue with',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               fontSize: context.ssp(14),
             ),
           ),
         ),
-        Expanded(child: Divider(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.12))),
+        Expanded(
+          child: Divider(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12)),
+        ),
       ],
     );
   }
@@ -522,7 +526,9 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
       child: Container(
         padding: EdgeInsets.symmetric(vertical: context.ssp(12)),
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.08)),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
+          ),
           borderRadius: context.radiu(16),
         ),
         child: Row(
@@ -534,7 +540,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
               label,
               style: TextStyle(
                 fontSize: context.ssp(14),
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w500,
               ),
             ),
