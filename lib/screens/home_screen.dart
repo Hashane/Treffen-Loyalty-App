@@ -77,8 +77,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                Theme.of(context).colorScheme.secondary.withOpacity(0.06),
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                Theme.of(context).colorScheme.secondary.withValues(alpha: 0.06),
               ],
             ),
           ),
@@ -128,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Text(
                       'Welcome back,',
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
                         fontSize: 14.sp,
                       ),
                     ),
@@ -147,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   width: 48.w,
                   height: 48.w,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.12),
+                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(24.r),
                   ),
                   child: Center(
@@ -179,15 +179,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             // Points Card
             Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.06),
+                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(24.r),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.04),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -208,7 +208,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             Text(
                               'Total Points',
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary.withValues(alpha: 0.9),
                                 fontSize: 14.sp,
                               ),
                             ),
@@ -248,7 +250,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             Text(
                               'Gold Tier',
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.9),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onPrimary.withValues(alpha: 0.9),
                                 fontSize: 14.sp,
                               ),
                             ),
@@ -273,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   value: _progressAnimation.value,
                                   backgroundColor: Theme.of(
                                     context,
-                                  ).colorScheme.onPrimary.withOpacity(0.08),
+                                  ).colorScheme.onPrimary.withValues(alpha: 0.08),
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     Theme.of(context).colorScheme.secondary,
                                   ),
@@ -351,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF9333EA).withOpacity(0.1),
+              color: const Color(0xFF9333EA).withValues(alpha: 0.1),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -446,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF9333EA).withOpacity(0.1),
+                        color: const Color(0xFF9333EA).withValues(alpha: 0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
@@ -565,7 +569,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF9333EA).withOpacity(0.1),
+                  color: const Color(0xFF9333EA).withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 4),
                 ),

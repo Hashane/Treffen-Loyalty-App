@@ -5,6 +5,7 @@ import 'screens/login_screen.dart';
 import 'theme.dart';
 import 'controllers/theme_controller.dart';
 import 'core/config/env_config.dart';
+import 'core/routes/app_router.dart';
 
 const String _envFromDefine = String.fromEnvironment('ENV', defaultValue: 'dev');
 
@@ -46,18 +47,12 @@ class _MyAppState extends State<MyApp> {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       builder: (context, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: 'Loyalty App',
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: ThemeController.instance.themeMode,
-          home: LoginScreen(
-            onLogin: () {
-              Navigator.of(
-                context,
-              ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
-            },
-          ),
+          routerConfig: AppRouter.router,
         );
       },
     );
