@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loyalty/screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'theme.dart';
 import 'controllers/theme_controller.dart';
-import 'screens/settings_screen.dart';
+import 'core/config/env_config.dart';
+
+const String _envFromDefine = String.fromEnvironment('ENV', defaultValue: 'dev');
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment file based on --dart-define ENV value (default: dev)
+  await EnvConfig.load(env: _envFromDefine);
+
   await ThemeController.instance.load();
   runApp(const MyApp());
 }
@@ -44,10 +51,11 @@ class _MyAppState extends State<MyApp> {
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: ThemeController.instance.themeMode,
-          home: EnhancedAuthScreen(
+          home: LoginScreen(
             onLogin: () {
-              // Navigate to home screen after login
-              print('Login successful!');
+              Navigator.of(
+                context,
+              ).pushReplacement(MaterialPageRoute(builder: (_) => const HomeScreen()));
             },
           ),
         );

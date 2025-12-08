@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../utils/responsive.dart';
+import '../services/auth_service.dart';
 
-class EnhancedAuthScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   final VoidCallback onLogin;
 
-  const EnhancedAuthScreen({super.key, required this.onLogin});
+  const LoginScreen({super.key, required this.onLogin});
 
   @override
-  State<EnhancedAuthScreen> createState() => _EnhancedAuthScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
   bool isLogin = true;
   bool showPassword = false;
   bool isLoading = false;
@@ -108,15 +108,28 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
     if (_formKey.currentState!.validate()) {
       setState(() => isLoading = true);
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
+      // Call real auth service
+      final auth = AuthService();
+      // ignore: avoid_print
+      print('Calling AuthService.login for ${emailController.text.trim()}');
+      final result = await auth.login(emailController.text.trim(), passwordController.text);
+
+      // ignore: avoid_print
+      print('AuthService.login result: $result');
 
       setState(() => isLoading = false);
 
-      // Success haptic
-      HapticFeedback.heavyImpact();
-
-      widget.onLogin();
+      if (result['success'] == true) {
+        // Success haptic
+        HapticFeedback.heavyImpact();
+        widget.onLogin();
+      } else {
+        // Error: show message and shake
+        final msg = result['message'] ?? 'Login failed';
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        _shakeController.forward().then((_) => _shakeController.reverse());
+        HapticFeedback.vibrate();
+      }
     } else {
       // Error shake animation
       _shakeController.forward().then((_) => _shakeController.reverse());
@@ -169,7 +182,10 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
 
   Widget _buildHeader() {
     return Padding(
-      padding: EdgeInsets.only(top: context.hp(0.08), bottom: context.hp(0.04)),
+      padding: EdgeInsets.only(
+        top: ScreenUtil().screenHeight * 0.08,
+        bottom: ScreenUtil().screenHeight * 0.04,
+      ),
       child: Column(
         children: [
           // Animated Logo
@@ -185,7 +201,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
                     height: ScreenUtil().screenWidth * 0.18,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
-                      borderRadius: context.radiu(16),
+                      borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.1),
@@ -204,7 +220,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
               );
             },
           ),
-          SizedBox(height: context.hp(0.03)),
+          SizedBox(height: ScreenUtil().screenHeight * 0.03),
           // Title
           FadeTransition(
             opacity: _titleAnimation,
@@ -227,7 +243,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
               ),
             ),
           ),
-          SizedBox(height: context.hp(0.01)),
+          SizedBox(height: ScreenUtil().screenHeight * 0.01),
           // Subtitle
           FadeTransition(
             opacity: _subtitleAnimation,
@@ -256,12 +272,12 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(context.ssp(40)),
-              topRight: Radius.circular(context.ssp(40)),
+              topLeft: Radius.circular(40.r),
+              topRight: Radius.circular(40.r),
             ),
           ),
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(context.ssp(24)),
+            padding: EdgeInsets.all(24.r),
             child: AnimatedBuilder(
               animation: _shakeAnimation,
               builder: (context, child) {
@@ -301,7 +317,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
               return null;
             },
           ),
-          SizedBox(height: context.ssp(24)),
+          SizedBox(height: 24.h),
 
           // Password Input
           _buildInputField(
@@ -330,7 +346,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
               },
             ),
           ),
-          SizedBox(height: context.ssp(16)),
+          SizedBox(height: 16.h),
 
           // Forgot Password
           if (isLogin)
@@ -489,12 +505,12 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
           child: Divider(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.12)),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.ssp(16)),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Text(
             'Or continue with',
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              fontSize: context.ssp(14),
+              fontSize: 14.sp,
             ),
           ),
         ),
@@ -510,7 +526,7 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
     return Row(
       children: [
         Expanded(child: _buildSocialButton('Google', Icons.g_mobiledata, cs.primary)),
-        SizedBox(width: context.ssp(16)),
+        SizedBox(width: 16.w),
         Expanded(child: _buildSocialButton('Facebook', Icons.facebook, cs.primary)),
       ],
     );
@@ -522,24 +538,24 @@ class _EnhancedAuthScreenState extends State<EnhancedAuthScreen> with TickerProv
         HapticFeedback.mediumImpact();
         // Handle social login
       },
-      borderRadius: context.radiu(16),
+      borderRadius: BorderRadius.circular(16.r),
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: context.ssp(12)),
+        padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
           border: Border.all(
             color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
           ),
-          borderRadius: context.radiu(16),
+          borderRadius: BorderRadius.circular(16.r),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 24, color: color),
-            SizedBox(width: context.ssp(8)),
+            SizedBox(width: 8.w),
             Text(
               label,
               style: TextStyle(
-                fontSize: context.ssp(14),
+                fontSize: 14.sp,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w500,
               ),
