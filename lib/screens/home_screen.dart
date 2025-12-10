@@ -213,200 +213,129 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildPointsCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          children: [
-            // Points Display
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Total Points',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    ScaleTransition(
-                      scale: _pointsScaleAnimation,
-                      child: const Text(
-                        '3,850',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: const BoxDecoration(color: Color(0xFFFBBF24), shape: BoxShape.circle),
-                  child: const Icon(Icons.star, color: Color(0xFFB45309), size: 24),
-                ),
-              ],
-            ),
-            SizedBox(height: 24.h),
-
-            // Tier Progress
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Gold Tier',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    Text(
-                      '650 pts to Platinum',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8.h),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: SizedBox(
-                    height: 8,
-                    child: AnimatedBuilder(
-                      animation: _progressAnimation,
-                      builder: (context, child) {
-                        return LinearProgressIndicator(
-                          value: _progressAnimation.value,
-                          backgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.onPrimary.withValues(alpha: 0.08),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).colorScheme.secondary,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildQuickActions() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildActionButton(
-              icon: Icons.qr_code_scanner,
-              label: 'Scan QR',
-              gradient: const [Color(0xFF9333EA), Color(0xFF2563EB)],
-              onTap: () {
-                // Navigate to scan
-              },
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildActionButton(
-              icon: Icons.card_giftcard,
-              label: 'Rewards',
-              gradient: const [Color(0xFFEC4899), Color(0xFFEF4444)],
-              onTap: () {
-                // Navigate to rewards
-              },
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildActionButton(
-              icon: Icons.location_on,
-              label: 'Nearby',
-              gradient: const [Color(0xFF10B981), Color(0xFF059669)],
-              onTap: () {
-                // Navigate to nearby
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required List<Color> gradient,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+    return Transform.translate(
+      offset: Offset(0, -20.h), // Overlap with header
       child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 24.w),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(24.r),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+            width: 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF9333EA).withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 20.r,
+              offset: Offset(0, 10.h),
             ),
           ],
         ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: gradient),
-                borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: EdgeInsets.all(24.r),
+          child: Column(
+            children: [
+              // Points Display
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total Points',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      ScaleTransition(
+                        scale: _pointsScaleAnimation,
+                        child: Text(
+                          '3,850',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 40.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    width: 48.w,
+                    height: 48.w,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.star,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24.sp,
+                    ),
+                  ),
+                ],
               ),
-              child: Icon(icon, color: Colors.white, size: 24),
-            ),
-            const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF374151))),
-          ],
+              SizedBox(height: 24.h),
+
+              // Tier Progress
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Gold Tier',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '650 pts to Platinum',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8.h),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4.r),
+                    child: SizedBox(
+                      height: 8.h,
+                      child: AnimatedBuilder(
+                        animation: _progressAnimation,
+                        builder: (context, child) {
+                          return LinearProgressIndicator(
+                            value: _progressAnimation.value,
+                            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.secondary,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildFeaturedOffers() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final offers = [
       {
         'title': '20% Off Coffee',
@@ -432,52 +361,53 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Featured Offers',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF111827),
+                  color: colorScheme.onSurface,
                 ),
               ),
               TextButton(
                 onPressed: () {},
                 child: Row(
-                  children: const [
+                  children: [
                     Text('View All'),
-                    SizedBox(width: 4),
-                    Icon(Icons.chevron_right, size: 16),
+                    SizedBox(width: 4.w),
+                    Icon(Icons.chevron_right, size: 16.sp),
                   ],
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 10.h),
         SizedBox(
-          height: 240,
+          height: 250.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
             itemCount: offers.length,
             itemBuilder: (context, index) {
               final offer = offers[index];
               return Padding(
-                padding: const EdgeInsets.only(right: 16),
+                padding: EdgeInsets.only(right: 16.w),
                 child: Container(
-                  width: 280,
+                  width: 280.w,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1), width: 1),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF9333EA).withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 20.r,
+                        offset: Offset(0, 4.h),
                       ),
                     ],
                   ),
@@ -485,52 +415,59 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(16.r),
+                          topRight: Radius.circular(16.r),
                         ),
                         child: Image.network(
                           offer['image']!,
-                          height: 140,
+                          height: 140.h,
                           width: double.infinity,
                           fit: BoxFit.cover,
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
-                              height: 140,
-                              color: Colors.grey[200],
-                              child: const Icon(Icons.image, size: 48),
+                              height: 140.h,
+                              color: colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.image,
+                                size: 48.sp,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                             );
                           },
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16.w),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.bolt, color: Color(0xFFFBBF24), size: 16),
-                                const SizedBox(width: 4),
+                                Icon(Icons.bolt, color: Color(0xFFFBBF24), size: 16.sp),
+                                SizedBox(width: 4.w),
                                 Text(
                                   'Limited Time',
-                                  style: TextStyle(fontSize: 12, color: const Color(0xFF9333EA)),
+                                  style: TextStyle(fontSize: 12.sp, color: colorScheme.primary),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8.h),
                             Text(
                               offer['title']!,
-                              style: const TextStyle(
-                                fontSize: 16,
+                              style: TextStyle(
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF111827),
+                                color: colorScheme.onSurface,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4.h),
                             Text(
                               offer['store']!,
-                              style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
                             ),
                           ],
                         ),
@@ -547,6 +484,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildRecentActivity() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     final activities = [
       {
         'type': 'earned',
@@ -579,66 +518,78 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     ];
 
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Recent Activity',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF111827)),
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(16.r),
+              border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1), width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF9333EA).withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
+                  color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 20.r,
+                  offset: Offset(0, 4.h),
                 ),
               ],
             ),
             child: ListView.separated(
+              padding: EdgeInsets.zero,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: activities.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
+              separatorBuilder: (context, index) =>
+                  Divider(height: 1.h, color: colorScheme.outline.withValues(alpha: 0.1)),
               itemBuilder: (context, index) {
                 final activity = activities[index];
                 final isEarned = activity['type'] == 'earned';
 
                 return Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.w),
                   child: Row(
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 48.w,
+                        height: 48.w,
                         decoration: BoxDecoration(
-                          color: isEarned ? const Color(0xFFD1FAE5) : const Color(0xFFF3E8FF),
-                          borderRadius: BorderRadius.circular(12),
+                          color: isEarned
+                              ? colorScheme.secondaryContainer
+                              : colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Icon(
                           activity['icon'] as IconData,
-                          color: isEarned ? const Color(0xFF059669) : const Color(0xFF9333EA),
-                          size: 24,
+                          color: isEarned ? colorScheme.secondary : colorScheme.primary,
+                          size: 24.sp,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               activity['store'] as String,
-                              style: const TextStyle(fontSize: 16, color: Color(0xFF111827)),
+                              style: TextStyle(fontSize: 16.sp, color: colorScheme.onSurface),
                             ),
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2.h),
                             Text(
                               activity['time'] as String,
-                              style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
                             ),
                           ],
                         ),
@@ -646,9 +597,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Text(
                         '${activity['amount'] as int > 0 ? '+' : ''}${activity['amount']} pts',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          color: isEarned ? const Color(0xFF059669) : const Color(0xFF9333EA),
+                          color: isEarned ? colorScheme.secondary : colorScheme.primary,
                         ),
                       ),
                     ],
