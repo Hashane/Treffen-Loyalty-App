@@ -46,6 +46,7 @@ class _MyAppState extends State<MyApp> {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
+      splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp.router(
           title: 'Loyalty App',
