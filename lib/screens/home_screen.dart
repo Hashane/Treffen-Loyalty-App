@@ -270,9 +270,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           boxShadow: [
             BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 4.r,
+              offset: Offset(0, 1.h),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 16.r,
+              offset: Offset(0, 8.h),
+            ),
+            BoxShadow(
               color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 20.r,
-              offset: Offset(0, 10.h),
+              blurRadius: 24.r,
+              offset: Offset(0, 16.h),
             ),
           ],
         ),
@@ -437,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             itemBuilder: (context, index) {
               final offer = offers[index];
               return Padding(
-                padding: EdgeInsets.only(right: 16.w),
+                padding: EdgeInsets.only(right: 24.w),
                 child: Container(
                   width: 280.w,
                   decoration: BoxDecoration(
@@ -446,9 +456,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1), width: 1),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 20.r,
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 12.r,
                         offset: Offset(0, 4.h),
+                        spreadRadius: 0,
                       ),
                     ],
                   ),
@@ -579,9 +590,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1), width: 1),
               boxShadow: [
                 BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 4.r,
+                  offset: Offset(0, 1.h),
+                ),
+                BoxShadow(
                   color: Colors.black.withValues(alpha: 0.08),
+                  blurRadius: 16.r,
+                  offset: Offset(0, 8.h),
+                ),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
                   blurRadius: 20.r,
-                  offset: Offset(0, 4.h),
+                  offset: Offset(0, 12.h),
                 ),
               ],
             ),
