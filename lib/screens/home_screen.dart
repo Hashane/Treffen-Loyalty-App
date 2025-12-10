@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loyalty/widgets/flip_cart.dart';
+import 'package:loyalty/widgets/treffen_rewards_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,19 +84,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ],
             ),
           ),
-          child: SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                // Header with Points Card
-                SliverToBoxAdapter(child: Column(children: [_buildHeader(), _buildQuickActions()])),
 
-                // Featured Offers
-                SliverToBoxAdapter(child: _buildFeaturedOffers()),
+          child: CustomScrollView(
+            slivers: [
+              // Header with Points Card
+              SliverToBoxAdapter(child: Column(children: [_buildHeader(), _buildPointsCard()])),
 
-                // Recent Activity
-                SliverToBoxAdapter(child: _buildRecentActivity()),
-              ],
-            ),
+              // Featured Offers
+              SliverToBoxAdapter(child: _buildFeaturedOffers()),
+
+              // Recent Activity
+              SliverToBoxAdapter(child: _buildRecentActivity()),
+            ],
           ),
         ),
       ),
@@ -103,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildHeader() {
     return Container(
+      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
@@ -175,122 +177,145 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ],
             ),
             SizedBox(height: 32.h),
+            FlipCard(
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOutCubic,
+              elevation: 12,
+              borderRadius: BorderRadius.circular(16),
+              frontSide: _buildCardFront(),
+              backSide: _buildCardBack(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-            // Points Card
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(24.r),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(24.r),
-                child: Column(
+  Widget _buildCardFront() {
+    final card = TreffenRewardsCard(
+      userName: 'bitch a',
+      userId: '1597209293',
+      points: 20200.00,
+      tier: 'PLATINUM',
+    );
+    return card.buildFrontSide();
+  }
+
+  Widget _buildCardBack() {
+    final card = TreffenRewardsCard(
+      userName: 'asa',
+      userId: '1597209293',
+      points: 20200.00,
+      tier: 'PLATINUM',
+      qrData: '1597209293', // Can be any data for QR code
+    );
+    return card.buildBackSide();
+  }
+
+  Widget _buildPointsCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(24.r),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(24.r),
+        child: Column(
+          children: [
+            // Points Display
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Points Display
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Total Points',
-                              style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimary.withValues(alpha: 0.9),
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            ScaleTransition(
-                              scale: _pointsScaleAnimation,
-                              child: const Text(
-                                '3,850',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFBBF24),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.star, color: Color(0xFFB45309), size: 24),
-                        ),
-                      ],
+                    Text(
+                      'Total Points',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
+                        fontSize: 14.sp,
+                      ),
                     ),
-                    SizedBox(height: 24.h),
-
-                    // Tier Progress
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Gold Tier',
-                              style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimary.withValues(alpha: 0.9),
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                            Text(
-                              '650 pts to Platinum',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary,
-                                fontSize: 14.sp,
-                              ),
-                            ),
-                          ],
+                    const SizedBox(height: 4),
+                    ScaleTransition(
+                      scale: _pointsScaleAnimation,
+                      child: const Text(
+                        '3,850',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 8.h),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: SizedBox(
-                            height: 8,
-                            child: AnimatedBuilder(
-                              animation: _progressAnimation,
-                              builder: (context, child) {
-                                return LinearProgressIndicator(
-                                  value: _progressAnimation.value,
-                                  backgroundColor: Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimary.withValues(alpha: 0.08),
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).colorScheme.secondary,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
-              ),
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: const BoxDecoration(color: Color(0xFFFBBF24), shape: BoxShape.circle),
+                  child: const Icon(Icons.star, color: Color(0xFFB45309), size: 24),
+                ),
+              ],
+            ),
+            SizedBox(height: 24.h),
+
+            // Tier Progress
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Gold Tier',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                    Text(
+                      '650 pts to Platinum',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: SizedBox(
+                    height: 8,
+                    child: AnimatedBuilder(
+                      animation: _progressAnimation,
+                      builder: (context, child) {
+                        return LinearProgressIndicator(
+                          value: _progressAnimation.value,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onPrimary.withValues(alpha: 0.08),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).colorScheme.secondary,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
