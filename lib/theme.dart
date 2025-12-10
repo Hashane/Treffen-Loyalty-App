@@ -7,8 +7,8 @@ class AppTheme {
     // - Secondary: Teal Accent
     // - Background / Surface: soft greys
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF0B3D91), // navy
-      secondary: const Color(0xFF17A2B8), // teal
+      seedColor: const Color.fromARGB(255, 255, 255, 255), // Burgundy
+      secondary: const Color.fromARGB(255, 7, 7, 6), // Warm gold
       brightness: Brightness.light,
     );
 
@@ -18,7 +18,7 @@ class AppTheme {
     );
 
     return base.copyWith(
-      scaffoldBackgroundColor: const Color(0xFFF6F8FA),
+      scaffoldBackgroundColor: Colors.white,
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,

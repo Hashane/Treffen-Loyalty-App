@@ -17,17 +17,55 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) => ShellScreen(child: child),
         routes: [
-          GoRoute(path: '/home', name: 'home', builder: (context, state) => const HomeScreen()),
+          GoRoute(
+            path: '/home',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: HomeScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  // Change the opacity of the screen using a Curve based on the the animation's
+                  // value
+                  return FadeTransition(
+                    opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+                    child: child,
+                  );
+                },
+              );
+            },
+          ),
+
           GoRoute(
             path: '/rewards',
             name: 'rewards',
-            builder: (context, state) =>
-                const Scaffold(body: Center(child: Text('Rewards Screen'))),
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const Scaffold(body: Center(child: Text('Rewards Screen'))),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+                    child: child,
+                  );
+                },
+              );
+            },
           ),
           GoRoute(
             path: '/settings',
             name: 'settings',
-            builder: (context, state) => const SettingsScreen(),
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const SettingsScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+                    child: child,
+                  );
+                },
+              );
+            },
           ),
         ],
       ),

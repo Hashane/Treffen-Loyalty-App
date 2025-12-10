@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loyalty/widgets/flip_cart.dart';
 import 'package:loyalty/widgets/treffen_rewards_card.dart';
@@ -22,6 +23,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+    // Set transparent status bar
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
 
     // Fade animation
     _fadeController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
@@ -73,30 +82,121 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Scaffold(
       body: FadeTransition(
         opacity: _fadeAnimation,
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
-                Theme.of(context).colorScheme.secondary.withValues(alpha: 0.06),
-              ],
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // Floating SliverAppBar that appears on scroll up
+            SliverAppBar(
+              floating: true, // Appears when scrolling up
+              snap: true, // Snaps into view
+              stretch: true,
+              pinned: true,
+              elevation: 0,
+              toolbarHeight: 60.h,
+              systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarColor: Colors.transparent,
+                statusBarIconBrightness: Brightness.light,
+              ),
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.secondary,
+                    ],
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Title
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Alex Johnson',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'Gold Member',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.8),
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Action Icons
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.notifications_outlined),
+                              color: Colors.white,
+                              onPressed: () {},
+                            ),
+                            SizedBox(width: 8.w),
+                            Container(
+                              width: 48.w,
+                              height: 48.w,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(24.r),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  width: 40.w,
+                                  height: 40.w,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.white.withValues(alpha: 0.9),
+                                        Colors.white.withValues(alpha: 0.7),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'AJ',
+                                      style: TextStyle(
+                                        color: Theme.of(context).colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
 
-          child: CustomScrollView(
-            slivers: [
-              // Header with Points Card
-              SliverToBoxAdapter(child: Column(children: [_buildHeader(), _buildPointsCard()])),
+            // Header with Points Card
+            SliverToBoxAdapter(child: Column(children: [_buildHeader(), _buildPointsCard()])),
 
-              // Featured Offers
-              SliverToBoxAdapter(child: _buildFeaturedOffers()),
+            // Featured Offers
+            SliverToBoxAdapter(child: _buildFeaturedOffers()),
 
-              // Recent Activity
-              SliverToBoxAdapter(child: _buildRecentActivity()),
-            ],
-          ),
+            // Recent Activity
+            SliverToBoxAdapter(child: _buildRecentActivity()),
+
+            SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+          ],
         ),
       ),
     );
@@ -104,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      padding: EdgeInsets.only(top: 16.h), // Reduced since SafeArea is in SliverAppBar
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
@@ -117,66 +217,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       child: Padding(
-        padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 32.h),
+        padding: EdgeInsets.fromLTRB(24.w, 0.h, 24.w, 32.h),
         child: Column(
           children: [
-            // Top Bar
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Welcome back,',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.9),
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Alex Johnson',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 48.w,
-                  height: 48.w,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(24.r),
-                  ),
-                  child: Center(
-                    child: Container(
-                      width: 40.w,
-                      height: 40.w,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.secondary,
-                            Theme.of(context).colorScheme.primary,
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'AJ',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 32.h),
             FlipCard(
               duration: const Duration(milliseconds: 800),
               curve: Curves.easeInOutCubic,
@@ -191,9 +234,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  // ... rest of your widget methods stay the same
   Widget _buildCardFront() {
     final card = TreffenRewardsCard(
-      userName: 'bitch a',
+      userName: 'Sharon Christeen',
       userId: '1597209293',
       points: 20200.00,
       tier: 'PLATINUM',
@@ -207,14 +251,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       userId: '1597209293',
       points: 20200.00,
       tier: 'PLATINUM',
-      qrData: '1597209293', // Can be any data for QR code
+      qrData: '1597209293',
     );
     return card.buildBackSide();
   }
 
   Widget _buildPointsCard() {
     return Transform.translate(
-      offset: Offset(0, -20.h), // Overlap with header
+      offset: Offset(0, -20.h),
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 24.w),
         decoration: BoxDecoration(
@@ -236,7 +280,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           padding: EdgeInsets.all(24.r),
           child: Column(
             children: [
-              // Points Display
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,8 +324,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
               SizedBox(height: 24.h),
-
-              // Tier Progress
               Column(
                 children: [
                   Row(
@@ -334,8 +375,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildFeaturedOffers() {
+    // Keep as is
     final colorScheme = Theme.of(context).colorScheme;
-
     final offers = [
       {
         'title': '20% Off Coffee',
@@ -484,8 +525,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildRecentActivity() {
+    // Keep as is - same as your original
     final colorScheme = Theme.of(context).colorScheme;
-
     final activities = [
       {
         'type': 'earned',
@@ -554,7 +595,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               itemBuilder: (context, index) {
                 final activity = activities[index];
                 final isEarned = activity['type'] == 'earned';
-
                 return Padding(
                   padding: EdgeInsets.all(16.w),
                   child: Row(

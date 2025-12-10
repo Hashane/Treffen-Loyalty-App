@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:circle_nav_bar/circle_nav_bar.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ShellScreen extends StatefulWidget {
   final Widget child;
@@ -14,44 +12,71 @@ class ShellScreen extends StatefulWidget {
 }
 
 class _ShellScreenState extends State<ShellScreen> {
+  int _currentIndex = 0;
+
   int _getIndexFromRoute(String route) {
     if (route.contains('/home')) return 0;
     if (route.contains('/rewards')) return 1;
     if (route.contains('/settings')) return 2;
+    if (route.contains('/profile')) return 3;
     return 0;
   }
 
-  int get _currentIndex {
-    final route = GoRouter.of(context).state.uri.toString();
-    return _getIndexFromRoute(route);
-  }
-
   void _onTabChange(int index) {
-    final routes = ['/home', '/rewards', '/settings'];
+    final routes = ['/home', '/rewards', '/settings', '/profile'];
     if (index < routes.length) {
       context.go(routes[index]);
+      setState(() => _currentIndex = index);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    _currentIndex = _getIndexFromRoute(GoRouter.of(context).state.uri.toString());
+
     return Scaffold(
       body: widget.child,
-      bottomNavigationBar: CurvedNavigationBar(
-        index: _currentIndex,
-        height: 75.h,
-        items: [
-          CurvedNavigationBarItem(child: Icon(Icons.home_outlined), label: 'Home'),
-          CurvedNavigationBarItem(child: Icon(Icons.card_giftcard), label: 'Rewards'),
-          CurvedNavigationBarItem(child: Icon(Icons.history), label: 'Activity'),
-          CurvedNavigationBarItem(child: Icon(Icons.perm_identity), label: 'Profile'),
+      bottomNavigationBar: CircleNavBar(
+        activeIcons: [
+          Icon(Icons.home, color: colorScheme.onPrimary),
+          Icon(Icons.card_giftcard, color: colorScheme.onPrimary),
+          Icon(Icons.history, color: colorScheme.onPrimary),
+          Icon(Icons.person, color: colorScheme.onPrimary),
         ],
-        color: Colors.white,
-        buttonBackgroundColor: Colors.blue,
-        backgroundColor: Colors.transparent,
-        animationDuration: const Duration(milliseconds: 600),
-        animationCurve: Curves.easeInOut,
+        inactiveIcons: [
+          Icon(Icons.home_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
+          Icon(Icons.card_giftcard_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
+          Icon(Icons.history_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
+          Icon(Icons.person_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
+        ],
+        color: colorScheme.surface,
+        circleColor: colorScheme.surface,
+        height: 60,
+        circleWidth: 60,
+
+        activeIndex: _currentIndex,
         onTap: _onTabChange,
+        padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+        cornerRadius: const BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
+          bottomRight: Radius.circular(24),
+          bottomLeft: Radius.circular(24),
+        ),
+        shadowColor: colorScheme.shadow.withOpacity(0.1),
+        circleShadowColor: colorScheme.shadow.withOpacity(0.1),
+        elevation: 10,
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [colorScheme.primary, colorScheme.secondary],
+        ),
+        circleGradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [colorScheme.primary, colorScheme.secondary],
+        ),
       ),
     );
   }
