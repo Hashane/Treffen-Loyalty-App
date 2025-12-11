@@ -41,9 +41,9 @@ class _FlipCardState extends State<FlipCard> with SingleTickerProviderStateMixin
 
     // Auto flip once on init if enabled
     if (widget.autoFlipOnInit) {
-      Future.delayed(const Duration(milliseconds: 300), () {
+      Future.delayed(const Duration(milliseconds: 100), () {
         _controller.forward().then((_) {
-          Future.delayed(const Duration(milliseconds: 500), () {
+          Future.delayed(const Duration(milliseconds: 100), () {
             _controller.reverse().then((_) {
               _isFront = true;
             });

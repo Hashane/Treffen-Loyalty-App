@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:loyalty/widgets/flip_cart.dart';
+import 'package:loyalty/widgets/flip_card.dart';
 import 'package:loyalty/widgets/treffen_rewards_card.dart';
 
 class HomeScreen extends StatefulWidget {
