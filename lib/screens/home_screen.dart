@@ -56,10 +56,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _fadeController.forward();
 
     Future.delayed(const Duration(milliseconds: 200), () {
-      if (mounted) _pointsController.forward();
+      _pointsController.forward();
     });
     Future.delayed(const Duration(milliseconds: 500), () {
-      if (mounted) _progressController.forward();
+      _progressController.forward();
     });
   }
 
@@ -81,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           slivers: [
             // Floating SliverAppBar that appears on scroll up
             SliverAppBar(
+              stretch: true,
               floating: true, // Appears when scrolling up
               snap: true, // Snaps into view
               pinned: true,
@@ -433,7 +434,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         SizedBox(height: 12.h),
         SizedBox(
-          height: 280.h,
+          height: 210.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -444,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             },
           ),
         ),
-        SizedBox(height: 24.h),
+        SizedBox(height: 12.h),
       ],
     );
   }
