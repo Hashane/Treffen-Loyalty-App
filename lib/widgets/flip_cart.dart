@@ -8,6 +8,7 @@ class FlipCard extends StatefulWidget {
   final Curve curve;
   final double elevation;
   final BorderRadius? borderRadius;
+  final bool autoFlipOnInit;
 
   const FlipCard({
     super.key,
@@ -17,6 +18,7 @@ class FlipCard extends StatefulWidget {
     this.curve = Curves.easeInOut,
     this.elevation = 8.0,
     this.borderRadius,
+    this.autoFlipOnInit = false,
   });
 
   @override
@@ -36,6 +38,19 @@ class _FlipCardState extends State<FlipCard> with SingleTickerProviderStateMixin
       begin: 0,
       end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: widget.curve));
+
+    // Auto flip once on init if enabled
+    if (widget.autoFlipOnInit) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        _controller.forward().then((_) {
+          Future.delayed(const Duration(milliseconds: 500), () {
+            _controller.reverse().then((_) {
+              _isFront = true;
+            });
+          });
+        });
+      });
+    }
   }
 
   @override

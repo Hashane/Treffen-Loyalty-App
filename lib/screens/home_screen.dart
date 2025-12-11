@@ -61,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // Start animations
     _fadeController.forward();
+
     Future.delayed(const Duration(milliseconds: 200), () {
       _pointsController.forward();
     });
@@ -225,6 +226,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               curve: Curves.easeInOutCubic,
               elevation: 12,
               borderRadius: BorderRadius.circular(16),
+              autoFlipOnInit: true,
               frontSide: _buildCardFront(),
               backSide: _buildCardBack(),
             ),
