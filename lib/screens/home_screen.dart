@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loyalty/widgets/flip_card.dart';
+import 'package:loyalty/widgets/offers_card.dart';
 import 'package:loyalty/widgets/treffen_rewards_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,14 +24,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
-    // Set transparent status bar
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
 
     // Fade animation
     _fadeController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
@@ -196,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             // Recent Activity
             SliverToBoxAdapter(child: _buildRecentActivity()),
 
-            SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+            SliverToBoxAdapter(child: SizedBox(height: 100.h)),
           ],
         ),
       ),
@@ -439,100 +432,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ],
           ),
         ),
-        SizedBox(height: 10.h),
+        SizedBox(height: 12.h),
         SizedBox(
-          height: 250.h,
+          height: 280.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 24.w),
             itemCount: offers.length,
             itemBuilder: (context, index) {
               final offer = offers[index];
-              return Padding(
-                padding: EdgeInsets.only(right: 24.w),
-                child: Container(
-                  width: 280.w,
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(16.r),
-                    border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1), width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 12.r,
-                        offset: Offset(0, 4.h),
-                        spreadRadius: 0,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16.r),
-                          topRight: Radius.circular(16.r),
-                        ),
-                        child: Image.network(
-                          offer['image']!,
-                          height: 140.h,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              height: 140.h,
-                              color: colorScheme.surfaceContainerHighest,
-                              child: Icon(
-                                Icons.image,
-                                size: 48.sp,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(16.w),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.bolt, color: Color(0xFFFBBF24), size: 16.sp),
-                                SizedBox(width: 4.w),
-                                Text(
-                                  'Limited Time',
-                                  style: TextStyle(fontSize: 12.sp, color: colorScheme.primary),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8.h),
-                            Text(
-                              offer['title']!,
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.onSurface,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              offer['store']!,
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: colorScheme.onSurface.withValues(alpha: 0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
+              return OffersCard(offer: offer);
             },
           ),
         ),
+        SizedBox(height: 24.h),
       ],
     );
   }

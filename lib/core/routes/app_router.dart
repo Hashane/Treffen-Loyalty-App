@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loyalty/screens/home_screen.dart';
 import 'package:loyalty/screens/login_screen.dart';
+import 'package:loyalty/screens/rewards_screen.dart';
 import 'package:loyalty/screens/settings_screen.dart';
 import 'package:loyalty/screens/shell_screen.dart';
 
@@ -41,7 +42,7 @@ class AppRouter {
             pageBuilder: (context, state) {
               return CustomTransitionPage(
                 key: state.pageKey,
-                child: const Scaffold(body: Center(child: Text('Rewards Screen'))),
+                child: RewardsScreen(),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                   return FadeTransition(
                     opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
