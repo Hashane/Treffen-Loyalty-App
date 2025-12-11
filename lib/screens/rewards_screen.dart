@@ -19,13 +19,6 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
   void initState() {
     super.initState();
 
-    // Set transparent status bar
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-      ),
-    );
     // Fade animation
     _fadeController = AnimationController(duration: const Duration(milliseconds: 600), vsync: this);
     _fadeAnimation = Tween<double>(
@@ -58,7 +51,6 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                   floating: false,
                   pinned: true,
                   elevation: 0,
-                  stretch: true,
                   systemOverlayStyle: const SystemUiOverlayStyle(
                     statusBarColor: Colors.transparent,
                     statusBarIconBrightness: Brightness.light,
@@ -75,17 +67,13 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                       ),
                     ),
                     child: FlexibleSpaceBar(
-                      stretchModes: const <StretchMode>[
-                        StretchMode.zoomBackground,
-                        StretchMode.blurBackground,
-                        StretchMode.fadeTitle,
-                      ],
                       centerTitle: true,
+                      titlePadding: EdgeInsets.only(left: 16.w, bottom: 16.h, right: 16.w),
                       title: Text(
                         'Rewards',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 28.sp,
+                          fontSize: 22.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

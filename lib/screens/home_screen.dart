@@ -56,10 +56,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _fadeController.forward();
 
     Future.delayed(const Duration(milliseconds: 200), () {
-      _pointsController.forward();
+      if (mounted) _pointsController.forward();
     });
     Future.delayed(const Duration(milliseconds: 500), () {
-      _progressController.forward();
+      if (mounted) _progressController.forward();
     });
   }
 
@@ -83,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             SliverAppBar(
               floating: true, // Appears when scrolling up
               snap: true, // Snaps into view
-              stretch: true,
               pinned: true,
               elevation: 0,
               toolbarHeight: 60.h,
