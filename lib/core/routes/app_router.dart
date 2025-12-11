@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loyalty/screens/category_detail_screen.dart';
 import 'package:loyalty/screens/home_screen.dart';
 import 'package:loyalty/screens/login_screen.dart';
 import 'package:loyalty/screens/rewards_screen.dart';
@@ -51,6 +52,35 @@ class AppRouter {
                 },
               );
             },
+            routes: [
+              GoRoute(
+                path: 'category/:categoryName',
+                name: 'category-detail',
+                pageBuilder: (context, state) {
+                  final categoryName = state.pathParameters['categoryName']!;
+                  final rewards = state.extra as List<Map<String, dynamic>>;
+                  return CustomTransitionPage(
+                    key: state.pageKey,
+                    child: CategoryDetailScreen(
+                      categoryName: categoryName,
+                      rewards: rewards,
+                    ),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(1.0, 0.0),
+                          end: Offset.zero,
+                        ).animate(CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.easeInOutCubic,
+                        )),
+                        child: child,
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/settings',
