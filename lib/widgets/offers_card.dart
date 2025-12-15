@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
 class OffersCard extends StatefulWidget {
   final Map<String, dynamic> offer;
@@ -28,7 +29,7 @@ class _OffersCardState extends State<OffersCard> {
       padding: EdgeInsets.only(right: 12.w),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to offer detail or redeem
+          context.goNamed('offer-detail', extra: widget.offer);
         },
         borderRadius: BorderRadius.circular(16.r),
         child: Container(
@@ -131,25 +132,6 @@ class _OffersCardState extends State<OffersCard> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 8.h),
-                    // Compact button
-                    Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.symmetric(vertical: 8.h),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Text(
-                        'Redeem',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -161,21 +143,26 @@ class _OffersCardState extends State<OffersCard> {
   }
 
   Widget _buildFullCard(ColorScheme colorScheme) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: colorScheme.outline.withValues(alpha: 0.12), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 8.r,
-            offset: Offset(0, 2.h),
-          ),
-        ],
-      ),
-      child: Column(
+    return InkWell(
+      onTap: () {
+        context.goNamed('offer-detail', extra: widget.offer);
+      },
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16.h),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: colorScheme.outline.withValues(alpha: 0.12), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 8.r,
+              offset: Offset(0, 2.h),
+            ),
+          ],
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image with badge
@@ -274,38 +261,11 @@ class _OffersCardState extends State<OffersCard> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.h),
-                // Full button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Implement redeem functionality
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: EdgeInsets.symmetric(vertical: 14.h),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.card_giftcard, size: 20.sp),
-                        SizedBox(width: 8.w),
-                        Text(
-                          'Redeem Now',
-                          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
         ],
+        ),
       ),
     );
   }

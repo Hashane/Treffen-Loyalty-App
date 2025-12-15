@@ -7,11 +7,7 @@ class CategoryDetailScreen extends StatelessWidget {
   final String categoryName;
   final List<Map<String, dynamic>> rewards;
 
-  const CategoryDetailScreen({
-    super.key,
-    required this.categoryName,
-    required this.rewards,
-  });
+  const CategoryDetailScreen({super.key, required this.categoryName, required this.rewards});
 
   @override
   Widget build(BuildContext context) {
@@ -40,31 +36,32 @@ class CategoryDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              child: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        categoryName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+              child: FlexibleSpaceBar(
+                centerTitle: false,
+                title: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      categoryName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        '${rewards.length} rewards available',
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          fontSize: 14.sp,
-                        ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 2.h),
+                    Text(
+                      '${rewards.length} rewards available',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.normal,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -72,12 +69,9 @@ class CategoryDetailScreen extends StatelessWidget {
           SliverPadding(
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
             sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return OffersCard(offer: rewards[index], isCompact: false);
-                },
-                childCount: rewards.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return OffersCard(offer: rewards[index], isCompact: false);
+              }, childCount: rewards.length),
             ),
           ),
           SliverToBoxAdapter(child: SizedBox(height: 80.h)),

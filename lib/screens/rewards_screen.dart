@@ -67,8 +67,8 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                       ),
                     ),
                     child: FlexibleSpaceBar(
-                      centerTitle: true,
-                      titlePadding: EdgeInsets.only(left: 16.w, bottom: 16.h, right: 16.w),
+                      centerTitle: false,
+                      titlePadding: EdgeInsets.only(left: 24.w, bottom: 16.h),
                       title: Text(
                         'Rewards',
                         style: TextStyle(
