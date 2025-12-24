@@ -17,13 +17,13 @@ class _ShellScreenState extends State<ShellScreen> {
   int _getIndexFromRoute(String route) {
     if (route.contains('/home')) return 0;
     if (route.contains('/rewards')) return 1;
-    if (route.contains('/settings')) return 2;
-    if (route.contains('/profile')) return 3;
+    if (route.contains('/activity')) return 2;
+    if (route.contains('/settings')) return 3;
     return 0;
   }
 
   void _onTabChange(int index) {
-    final routes = ['/home', '/rewards', '/settings', '/profile'];
+    final routes = ['/home', '/rewards', '/activity', '/settings'];
     if (index < routes.length) {
       context.go(routes[index]);
       setState(() => _currentIndex = index);
@@ -41,14 +41,14 @@ class _ShellScreenState extends State<ShellScreen> {
         activeIcons: [
           Icon(Icons.home, color: colorScheme.onPrimary),
           Icon(Icons.card_giftcard, color: colorScheme.onPrimary),
-          Icon(Icons.history, color: colorScheme.onPrimary),
-          Icon(Icons.person, color: colorScheme.onPrimary),
+          Icon(Icons.timeline, color: colorScheme.onPrimary),
+          Icon(Icons.settings, color: colorScheme.onPrimary),
         ],
         inactiveIcons: [
-          Icon(Icons.home_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
-          Icon(Icons.card_giftcard_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
-          Icon(Icons.history_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
-          Icon(Icons.person_outlined, color: colorScheme.onSurface.withOpacity(0.6)),
+          Icon(Icons.home_outlined, color: colorScheme.onSurface.withValues(alpha: 0.6)),
+          Icon(Icons.card_giftcard_outlined, color: colorScheme.onSurface.withValues(alpha: 0.6)),
+          Icon(Icons.timeline_outlined, color: colorScheme.onSurface.withValues(alpha: 0.6)),
+          Icon(Icons.settings_outlined, color: colorScheme.onSurface.withValues(alpha: 0.6)),
         ],
         color: colorScheme.surface,
         circleColor: colorScheme.surface,

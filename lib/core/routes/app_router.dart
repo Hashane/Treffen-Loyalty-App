@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loyalty/screens/activity_screen.dart';
 import 'package:loyalty/screens/category_detail_screen.dart';
 import 'package:loyalty/screens/home_screen.dart';
 import 'package:loyalty/screens/login_screen.dart';
@@ -124,6 +125,22 @@ class AppRouter {
                 },
               ),
             ],
+          ),
+          GoRoute(
+            path: '/activity',
+            name: 'activity',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                key: state.pageKey,
+                child: const ActivityScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+                    child: child,
+                  );
+                },
+              );
+            },
           ),
           GoRoute(
             path: '/settings',
