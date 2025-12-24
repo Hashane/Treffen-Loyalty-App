@@ -7,6 +7,7 @@ import 'package:loyalty/screens/offer_detail_screen.dart';
 import 'package:loyalty/screens/rewards_screen.dart';
 import 'package:loyalty/screens/settings_screen.dart';
 import 'package:loyalty/screens/shell_screen.dart';
+import 'package:loyalty/screens/voucher_details_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -83,6 +84,33 @@ class AppRouter {
                   return CustomTransitionPage(
                     key: state.pageKey,
                     child: OfferDetailScreen(offer: offer),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(1.0, 0.0),
+                          end: Offset.zero,
+                        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic)),
+                        child: child,
+                      );
+                    },
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'voucher-details',
+                name: 'voucher-details',
+                pageBuilder: (context, state) {
+                  final data = state.extra as Map<String, dynamic>;
+                  return CustomTransitionPage(
+                    key: state.pageKey,
+                    child: VoucherDetailsPage(
+                      voucherId: data['voucherId'] as int,
+                      voucherCode: data['voucherCode'] as String,
+                      offerTitle: data['offerTitle'] as String,
+                      storeName: data['storeName'] as String,
+                      validUntil: data['validUntil'] as String?,
+                      imageUrl: data['imageUrl'] as String?,
+                    ),
                     transitionsBuilder: (context, animation, secondaryAnimation, child) {
                       return SlideTransition(
                         position: Tween<Offset>(

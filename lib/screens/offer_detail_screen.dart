@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:confetti/confetti.dart';
+import 'package:go_router/go_router.dart';
 
 class OfferDetailScreen extends StatefulWidget {
   final Map<String, dynamic> offer;
@@ -14,6 +15,8 @@ class OfferDetailScreen extends StatefulWidget {
 
 class _OfferDetailScreenState extends State<OfferDetailScreen> {
   late ConfettiController _confettiController;
+  bool _isRedeemed = false;
+  String? _redeemedVoucherCode;
 
   @override
   void initState() {
@@ -45,74 +48,78 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
                   statusBarColor: Colors.transparent,
                   statusBarIconBrightness: Brightness.light,
                 ),
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        widget.offer['image']!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  colorScheme.primaryContainer,
-                                  colorScheme.secondaryContainer,
-                                ],
-                              ),
-                            ),
-                            child: Icon(Icons.local_offer, size: 80.sp, color: colorScheme.primary),
-                          );
-                        },
-                      ),
-                      // Gradient overlay
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
-                          ),
-                        ),
-                      ),
-                      // Limited badge
-                      Positioned(
-                        top: 60.h,
-                        right: 16.w,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFBBF24),
-                            borderRadius: BorderRadius.circular(12.r),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.3),
-                                blurRadius: 8.r,
-                                offset: Offset(0, 2.h),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.bolt, color: Colors.white, size: 16.sp),
-                              SizedBox(width: 6.w),
-                              Text(
-                                'Limited Time',
-                                style: TextStyle(
-                                  fontSize: 12.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                backgroundColor: Colors.transparent,
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [colorScheme.primary, colorScheme.secondary],
+                    ),
+                  ),
+                  child: FlexibleSpaceBar(
+                    background: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(
+                          widget.offer['image']!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    colorScheme.primaryContainer,
+                                    colorScheme.secondaryContainer,
+                                  ],
                                 ),
                               ),
-                            ],
+                              child: Icon(
+                                Icons.local_offer,
+                                size: 80.sp,
+                                color: colorScheme.primary,
+                              ),
+                            );
+                          },
+                        ),
+                        // Limited badge
+                        Positioned(
+                          top: 60.h,
+                          right: 16.w,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFBBF24),
+                              borderRadius: BorderRadius.circular(12.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 8.r,
+                                  offset: Offset(0, 2.h),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.bolt, color: Colors.white, size: 16.sp),
+                                SizedBox(width: 6.w),
+                                Text(
+                                  'Limited Time',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -262,30 +269,6 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
               SliverToBoxAdapter(child: SizedBox(height: 100.h)),
             ],
           ),
-          // Confetti widget positioned at the top center (non-blocking)
-          IgnorePointer(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ConfettiWidget(
-                confettiController: _confettiController,
-                blastDirectionality: BlastDirectionality.explosive,
-                shouldLoop: false,
-                colors: const [
-                  Colors.green,
-                  Colors.blue,
-                  Colors.pink,
-                  Colors.orange,
-                  Colors.purple,
-                  Color(0xFFFBBF24),
-                ],
-                numberOfParticles: 20,
-                gravity: 0.25,
-                emissionFrequency: 0.03,
-                maximumSize: const Size(20, 20),
-                minimumSize: const Size(10, 10),
-              ),
-            ),
-          ),
         ],
       ),
       bottomNavigationBar: Container(
@@ -304,9 +287,23 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {
-                _showRedeemDialog(context);
-              },
+              onPressed: _isRedeemed
+                  ? () {
+                      context.goNamed(
+                        'voucher-details',
+                        extra: {
+                          'voucherId': 12345,
+                          'voucherCode': _redeemedVoucherCode!,
+                          'offerTitle': widget.offer['title'] ?? 'Special Offer',
+                          'storeName': widget.offer['store'] ?? 'Store',
+                          'validUntil': 'December 31, 2025',
+                          'imageUrl': widget.offer['image'] as String?,
+                        },
+                      );
+                    }
+                  : () {
+                      _showRedeemDialog(context);
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 foregroundColor: Colors.white,
@@ -317,10 +314,13 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.card_giftcard, size: 24.sp),
+                  Icon(
+                    _isRedeemed ? Icons.qr_code_2 : Icons.card_giftcard,
+                    size: 24.sp,
+                  ),
                   SizedBox(width: 12.w),
                   Text(
-                    'Redeem for 500 Points',
+                    _isRedeemed ? 'View My Voucher' : 'Redeem for 500 Points',
                     style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -416,8 +416,8 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              _confettiController.play();
-              //  _showSuccessSnackBar(context);
+
+              _showSuccessSnackBar(context, 'VOUCHER12345');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
@@ -433,99 +433,151 @@ class _OfferDetailScreenState extends State<OfferDetailScreen> {
     );
   }
 
-  void _showSuccessSnackBar(BuildContext context) {
+  void _showSuccessSnackBar(BuildContext context, String voucherCode) {
+    setState(() {
+      _isRedeemed = true;
+      _redeemedVoucherCode = voucherCode;
+    });
+
+    _confettiController.play();
+    _showSuccessModal(context, voucherCode);
+  }
+
+  void _showSuccessModal(BuildContext context, String voucherCode) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    // Show a bottom sheet with the redemption code
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!mounted) return;
-
-      showModalBottomSheet(
-        context: context,
-        isDismissible: true,
-        backgroundColor: Colors.transparent,
-        builder: (context) => Container(
-          margin: EdgeInsets.all(16.w),
-          padding: EdgeInsets.all(24.w),
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(16.w),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withValues(alpha: 0.7),
+      builder: (context) => PopScope(
+        canPop: false,
+        child: Stack(
+          children: [
+            Center(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 24.w),
+                padding: EdgeInsets.all(32.w),
                 decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 30.r,
+                      offset: Offset(0, 10.h),
+                    ),
+                  ],
                 ),
-                child: Icon(Icons.check_circle, size: 48.sp, color: Colors.green),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(20.w),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.check_circle, size: 56.sp, color: Colors.green),
+                    ),
+                    SizedBox(height: 24.h),
+                    Text(
+                      'Voucher Created!',
+                      style: TextStyle(
+                        fontSize: 26.sp,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Text(
+                      'Your reward has been converted to a voucher',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 15.sp,
+                        color: colorScheme.onSurface.withValues(alpha: 0.7),
+                        height: 1.4,
+                      ),
+                    ),
+                    SizedBox(height: 32.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          context.goNamed(
+                            'voucher-details',
+                            extra: {
+                              'voucherId': 12345,
+                              'voucherCode': voucherCode,
+                              'offerTitle': widget.offer['title'] ?? 'Special Offer',
+                              'storeName': widget.offer['store'] ?? 'Store',
+                              'validUntil': 'December 31, 2025',
+                              'imageUrl': widget.offer['image'] as String?,
+                            },
+                          );
+                        },
+                        icon: const Icon(Icons.qr_code_2),
+                        label: const Text('View Voucher & QR Code'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: colorScheme.onSurface.withValues(alpha: 0.7),
+                          side: BorderSide(
+                            color: colorScheme.outline.withValues(alpha: 0.3),
+                          ),
+                          elevation: 0,
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                        ),
+                        child: const Text('View Later'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 16.h),
-              Text(
-                'Success!',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
+            ),
+            // Confetti widget on top of the modal
+            IgnorePointer(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  shouldLoop: false,
+                  colors: const [
+                    Colors.green,
+                    Colors.blue,
+                    Colors.pink,
+                    Colors.orange,
+                    Colors.purple,
+                    Color(0xFFFBBF24),
+                  ],
+                  numberOfParticles: 20,
+                  gravity: 0.25,
+                  emissionFrequency: 0.03,
+                  maximumSize: const Size(20, 20),
+                  minimumSize: const Size(10, 10),
                 ),
               ),
-              SizedBox(height: 12.h),
-              Text(
-                'Your redemption code:',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
-              ),
-              SizedBox(height: 12.h),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: colorScheme.primary, width: 2),
-                ),
-                child: Text(
-                  'LOYAL2025XYZ',
-                  style: TextStyle(
-                    fontSize: 24.sp,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.primary,
-                    letterSpacing: 2,
-                  ),
-                ),
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                'Show this code at checkout',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              SizedBox(height: 24.h),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: EdgeInsets.symmetric(vertical: 14.h),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                  ),
-                  child: const Text('Done'),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
-    });
+      ),
+    );
   }
 }
