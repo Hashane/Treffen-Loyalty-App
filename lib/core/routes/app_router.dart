@@ -5,6 +5,7 @@ import 'package:loyalty/screens/category_detail_screen.dart';
 import 'package:loyalty/screens/home_screen.dart';
 import 'package:loyalty/screens/login_screen.dart';
 import 'package:loyalty/screens/offer_detail_screen.dart';
+import 'package:loyalty/screens/profile_screen.dart';
 import 'package:loyalty/screens/rewards_screen.dart';
 import 'package:loyalty/screens/settings_screen.dart';
 import 'package:loyalty/screens/shell_screen.dart';
@@ -143,12 +144,12 @@ class AppRouter {
             },
           ),
           GoRoute(
-            path: '/settings',
-            name: 'settings',
+            path: '/profile',
+            name: 'profile',
             pageBuilder: (context, state) {
               return CustomTransitionPage(
                 key: state.pageKey,
-                child: const SettingsScreen(),
+                child: const ProfileScreen(),
                 transitionsBuilder: (context, animation, secondaryAnimation, child) {
                   return FadeTransition(
                     opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
@@ -157,6 +158,27 @@ class AppRouter {
                 },
               );
             },
+            routes: [
+              GoRoute(
+                path: 'settings',
+                name: 'settings',
+                pageBuilder: (context, state) {
+                  return CustomTransitionPage(
+                    key: state.pageKey,
+                    child: const SettingsScreen(),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      return SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(1.0, 0.0),
+                          end: Offset.zero,
+                        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic)),
+                        child: child,
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
