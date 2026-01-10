@@ -244,7 +244,7 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                   ),
                 ),
                 SizedBox(
-                  height: 210.h,
+                  height: 200.h,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -274,7 +274,8 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
         'storeName': 'Starbucks',
         'validUntil': 'Jan 31, 2025',
         'redeemedDate': 'Jan 5, 2025',
-        'imageUrl': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop',
       },
       {
         'voucherId': 1002,
@@ -283,7 +284,8 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
         'storeName': 'Pizza Hut',
         'validUntil': 'Feb 15, 2025',
         'redeemedDate': 'Jan 3, 2025',
-        'imageUrl': 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
       },
       {
         'voucherId': 1003,
@@ -292,7 +294,8 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
         'storeName': 'Nike Store',
         'validUntil': 'Mar 1, 2025',
         'redeemedDate': 'Jan 1, 2025',
-        'imageUrl': 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=300&fit=crop',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=400&h=300&fit=crop',
       },
     ];
 
@@ -304,11 +307,7 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
           sliver: SliverToBoxAdapter(
             child: Row(
               children: [
-                Icon(
-                  Icons.redeem,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 24.sp,
-                ),
+                Icon(Icons.redeem, color: Theme.of(context).colorScheme.primary, size: 24.sp),
                 SizedBox(width: 8.w),
                 Text(
                   'My Vouchers',
@@ -410,7 +409,9 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                                     Icon(
                                       Icons.store,
                                       size: 13.sp,
-                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                                     ),
                                     SizedBox(width: 4.w),
                                     Flexible(
@@ -418,7 +419,9 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                                         voucher['storeName'] as String,
                                         style: TextStyle(
                                           fontSize: 13.sp,
-                                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -477,11 +480,7 @@ class _RewardsScreenState extends State<RewardsScreen> with TickerProviderStateM
                               ),
                               borderRadius: BorderRadius.circular(12.r),
                             ),
-                            child: Icon(
-                              Icons.qr_code_2,
-                              color: Colors.white,
-                              size: 24.sp,
-                            ),
+                            child: Icon(Icons.qr_code_2, color: Colors.white, size: 24.sp),
                           ),
                         ],
                       ),
