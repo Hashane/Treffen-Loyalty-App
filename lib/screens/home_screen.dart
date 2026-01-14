@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:loyalty/widgets/flip_card.dart';
 import 'package:loyalty/widgets/offers_card.dart';
 import 'package:loyalty/widgets/treffen_rewards_card.dart';
+import 'package:loyalty/providers/home_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -61,6 +63,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     Future.delayed(const Duration(milliseconds: 500), () {
       _progressController.forward();
     });
+
+    // Load data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeProvider>().loadHomeData();
+    });
   }
 
   @override
@@ -71,134 +78,266 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  Future<void> _onRefresh() async {
+    await context.read<HomeProvider>().refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // Floating SliverAppBar that appears on scroll up
-            SliverAppBar(
-              stretch: true,
-              floating: true, // Appears when scrolling up
-              snap: true, // Snaps into view
-              pinned: true,
-              elevation: 0,
-              toolbarHeight: 60.h,
-              systemOverlayStyle: const SystemUiOverlayStyle(
-                statusBarColor: Colors.transparent,
-                statusBarIconBrightness: Brightness.light,
-              ),
-              flexibleSpace: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.secondary,
-                    ],
-                  ),
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Consumer<HomeProvider>(
+        builder: (context, homeProvider, child) {
+          // Show loading state
+          if (homeProvider.isLoading && !homeProvider.isRefreshing) {
+            return _buildLoadingState();
+          }
+
+          // Show error state
+          if (homeProvider.hasError) {
+            return _buildErrorState(homeProvider.errorMessage ?? 'An error occurred');
+          }
+
+          // Show content
+          return FadeTransition(
+            opacity: _fadeAnimation,
+            child: RefreshIndicator(
+              onRefresh: _onRefresh,
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  // Floating SliverAppBar
+                  _buildAppBar(homeProvider),
+
+                  // Header with Points Card
+                  SliverToBoxAdapter(
+                    child: Column(
                       children: [
-                        // Title
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Alex Johnson',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              'Gold Member',
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.8),
-                                fontSize: 12.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                        // Action Icons
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.notifications_outlined),
-                              color: Colors.white,
-                              onPressed: () {},
-                            ),
-                            SizedBox(width: 8.w),
-                            Container(
-                              width: 48.w,
-                              height: 48.w,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(24.r),
-                              ),
-                              child: Center(
-                                child: Container(
-                                  width: 40.w,
-                                  height: 40.w,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Colors.white.withValues(alpha: 0.9),
-                                        Colors.white.withValues(alpha: 0.7),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      'AJ',
-                                      style: TextStyle(
-                                        color: Theme.of(context).colorScheme.primary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        _buildHeader(homeProvider),
+                        _buildPointsCard(homeProvider),
                       ],
                     ),
                   ),
-                ),
+
+                  // Featured Offers
+                  SliverToBoxAdapter(child: _buildFeaturedOffers(homeProvider)),
+
+                  // Recent Activity
+                  SliverToBoxAdapter(child: _buildRecentActivity(homeProvider)),
+
+                  SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+                ],
               ),
             ),
+          );
+        },
+      ),
+    );
+  }
 
-            // Header with Points Card
-            SliverToBoxAdapter(child: Column(children: [_buildHeader(), _buildPointsCard()])),
-
-            // Featured Offers
-            SliverToBoxAdapter(child: _buildFeaturedOffers()),
-
-            // Recent Activity
-            SliverToBoxAdapter(child: _buildRecentActivity()),
-
-            SliverToBoxAdapter(child: SizedBox(height: 100.h)),
+  Widget _buildLoadingState() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.secondary,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              color: Colors.white,
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              'Loading your rewards...',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.sp,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildErrorState(String message) {
     return Container(
-      padding: EdgeInsets.only(top: 16.h), // Reduced since SafeArea is in SliverAppBar
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.secondary,
+          ],
+        ),
+      ),
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                color: Colors.white,
+                size: 64.sp,
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                'Oops! Something went wrong',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 8.h),
+              Text(
+                message,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.8),
+                  fontSize: 14.sp,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24.h),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<HomeProvider>().loadHomeData();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h),
+                ),
+                child: Text('Try Again'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(HomeProvider homeProvider) {
+    final user = homeProvider.user;
+    final displayName = user?.name ?? 'Guest';
+    final displayTier = user?.tier ?? 'Member';
+    final initials = user?.displayInitials ?? 'G';
+
+    return SliverAppBar(
+      stretch: true,
+      floating: true,
+      snap: true,
+      pinned: true,
+      elevation: 0,
+      toolbarHeight: 60.h,
+      systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Theme.of(context).colorScheme.primary,
+              Theme.of(context).colorScheme.secondary,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayName,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '$displayTier Member',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.notifications_outlined),
+                      color: Colors.white,
+                      onPressed: () {},
+                    ),
+                    SizedBox(width: 8.w),
+                    Container(
+                      width: 48.w,
+                      height: 48.w,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(24.r),
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 40.w,
+                          height: 40.w,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.white.withValues(alpha: 0.9),
+                                Colors.white.withValues(alpha: 0.7),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Center(
+                            child: Text(
+                              initials,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(HomeProvider homeProvider) {
+    final user = homeProvider.user;
+
+    return Container(
+      padding: EdgeInsets.only(top: 16.h),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
@@ -220,8 +359,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               elevation: 12,
               borderRadius: BorderRadius.circular(16),
               autoFlipOnInit: true,
-              frontSide: _buildCardFront(),
-              backSide: _buildCardBack(),
+              frontSide: _buildCardFront(user),
+              backSide: _buildCardBack(user),
             ),
           ],
         ),
@@ -229,29 +368,46 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  // ... rest of your widget methods stay the same
-  Widget _buildCardFront() {
+  Widget _buildCardFront(user) {
     final card = TreffenRewardsCard(
-      userName: 'Sharon Christeen',
-      userId: '1597209293',
-      points: 20200.00,
-      tier: 'PLATINUM',
+      userName: user?.name ?? 'Guest',
+      userId: user?.id ?? '0000000000',
+      points: user?.points ?? 0.0,
+      tier: user?.tier ?? 'BRONZE',
     );
     return card.buildFrontSide();
   }
 
-  Widget _buildCardBack() {
+  Widget _buildCardBack(user) {
     final card = TreffenRewardsCard(
-      userName: 'asa',
-      userId: '1597209293',
-      points: 20200.00,
-      tier: 'PLATINUM',
-      qrData: '1597209293',
+      userName: user?.name ?? 'Guest',
+      userId: user?.id ?? '0000000000',
+      points: user?.points ?? 0.0,
+      tier: user?.tier ?? 'BRONZE',
+      qrData: user?.id ?? '0000000000',
     );
     return card.buildBackSide();
   }
 
-  Widget _buildPointsCard() {
+  Widget _buildPointsCard(HomeProvider homeProvider) {
+    final user = homeProvider.user;
+    final tier = homeProvider.tier;
+    final points = user?.points ?? 0.0;
+    final currentTier = tier?.currentTier ?? user?.tier ?? 'Bronze';
+    final nextTier = tier?.nextTier ?? 'Silver';
+    final pointsToNext = tier?.pointsToNext ?? 0;
+    final progress = tier?.progress ?? 0.0;
+
+    // Update progress animation with real data
+    if (_progressAnimation.value != progress && progress > 0) {
+      _progressController.reset();
+      _progressAnimation = Tween<double>(
+        begin: 0.0,
+        end: progress,
+      ).animate(CurvedAnimation(parent: _progressController, curve: Curves.easeInOut));
+      _progressController.forward();
+    }
+
     return Transform.translate(
       offset: Offset(0, -20.h),
       child: Container(
@@ -303,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ScaleTransition(
                         scale: _pointsScaleAnimation,
                         child: Text(
-                          '3,850',
+                          points.toStringAsFixed(0),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 40.sp,
@@ -335,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Gold Tier',
+                        '$currentTier Tier',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 14.sp,
@@ -343,7 +499,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                       Text(
-                        '650 pts to Platinum',
+                        '${pointsToNext.toStringAsFixed(0)} pts to $nextTier',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 14.sp,
@@ -379,29 +535,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildFeaturedOffers() {
-    // Keep as is
+  Widget _buildFeaturedOffers(HomeProvider homeProvider) {
     final colorScheme = Theme.of(context).colorScheme;
-    final offers = [
-      {
-        'title': '20% Off Coffee',
-        'store': 'StarBucks',
-        'image':
-            'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop',
-      },
-      {
-        'title': 'Buy 1 Get 1 Free',
-        'store': 'Pizza Hut',
-        'image':
-            'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
-      },
-      {
-        'title': 'Free Delivery',
-        'store': 'Amazon',
-        'image':
-            'https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?w=400&h=300&fit=crop',
-      },
-    ];
+    final offers = homeProvider.offers;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -433,56 +569,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         SizedBox(height: 12.h),
-        SizedBox(
-          height: 210.h,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
+        if (offers.isEmpty)
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
-            itemCount: offers.length,
-            itemBuilder: (context, index) {
-              final offer = offers[index];
-              return OffersCard(offer: offer);
-            },
+            child: Text(
+              'No offers available',
+              style: TextStyle(
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 14.sp,
+              ),
+            ),
+          )
+        else
+          SizedBox(
+            height: 210.h,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              itemCount: offers.length,
+              itemBuilder: (context, index) {
+                final offer = offers[index];
+                return OffersCard(
+                  offer: {
+                    'title': offer.title,
+                    'store': offer.store,
+                    'image': offer.imageUrl,
+                  },
+                );
+              },
+            ),
           ),
-        ),
         SizedBox(height: 12.h),
       ],
     );
   }
 
-  Widget _buildRecentActivity() {
-    // Keep as is - same as your original
+  Widget _buildRecentActivity(HomeProvider homeProvider) {
     final colorScheme = Theme.of(context).colorScheme;
-    final activities = [
-      {
-        'type': 'earned',
-        'amount': 150,
-        'store': 'Target',
-        'time': '2h ago',
-        'icon': Icons.trending_up,
-      },
-      {
-        'type': 'redeemed',
-        'amount': -500,
-        'store': '\$25 Gift Card',
-        'time': '1d ago',
-        'icon': Icons.card_giftcard,
-      },
-      {
-        'type': 'earned',
-        'amount': 200,
-        'store': 'Whole Foods',
-        'time': '2d ago',
-        'icon': Icons.trending_up,
-      },
-      {
-        'type': 'earned',
-        'amount': 100,
-        'store': 'Nike Store',
-        'time': '3d ago',
-        'icon': Icons.trending_up,
-      },
-    ];
+    final activities = homeProvider.activities;
 
     return Padding(
       padding: EdgeInsets.all(24.w),
@@ -498,92 +622,101 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           SizedBox(height: 16.h),
-          Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(16.r),
-              border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1), width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 4.r,
-                  offset: Offset(0, 1.h),
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 16.r,
-                  offset: Offset(0, 8.h),
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 20.r,
-                  offset: Offset(0, 12.h),
-                ),
-              ],
-            ),
-            child: ListView.separated(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: activities.length,
-              separatorBuilder: (context, index) =>
-                  Divider(height: 1.h, color: colorScheme.outline.withValues(alpha: 0.1)),
-              itemBuilder: (context, index) {
-                final activity = activities[index];
-                final isEarned = activity['type'] == 'earned';
-                return Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 48.w,
-                        height: 48.w,
-                        decoration: BoxDecoration(
-                          color: isEarned
-                              ? colorScheme.secondaryContainer
-                              : colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Icon(
-                          activity['icon'] as IconData,
-                          color: isEarned ? colorScheme.secondary : colorScheme.primary,
-                          size: 24.sp,
-                        ),
-                      ),
-                      SizedBox(width: 16.w),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              activity['store'] as String,
-                              style: TextStyle(fontSize: 16.sp, color: colorScheme.onSurface),
-                            ),
-                            SizedBox(height: 2.h),
-                            Text(
-                              activity['time'] as String,
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: colorScheme.onSurface.withValues(alpha: 0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        '${activity['amount'] as int > 0 ? '+' : ''}${activity['amount']} pts',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                          color: isEarned ? colorScheme.secondary : colorScheme.primary,
-                        ),
-                      ),
-                    ],
+          if (activities.isEmpty)
+            Text(
+              'No recent activity',
+              style: TextStyle(
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 14.sp,
+              ),
+            )
+          else
+            Container(
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(color: colorScheme.outline.withValues(alpha: 0.1), width: 1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 4.r,
+                    offset: Offset(0, 1.h),
                   ),
-                );
-              },
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 16.r,
+                    offset: Offset(0, 8.h),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 20.r,
+                    offset: Offset(0, 12.h),
+                  ),
+                ],
+              ),
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: activities.length,
+                separatorBuilder: (context, index) =>
+                    Divider(height: 1.h, color: colorScheme.outline.withValues(alpha: 0.1)),
+                itemBuilder: (context, index) {
+                  final activity = activities[index];
+                  final isEarned = activity.isEarned;
+                  return Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48.w,
+                          height: 48.w,
+                          decoration: BoxDecoration(
+                            color: isEarned
+                                ? colorScheme.secondaryContainer
+                                : colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Icon(
+                            activity.icon,
+                            color: isEarned ? colorScheme.secondary : colorScheme.primary,
+                            size: 24.sp,
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                activity.store,
+                                style: TextStyle(fontSize: 16.sp, color: colorScheme.onSurface),
+                              ),
+                              SizedBox(height: 2.h),
+                              Text(
+                                activity.timeAgo,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: colorScheme.onSurface.withValues(alpha: 0.6),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '${activity.amount > 0 ? '+' : ''}${activity.amount} pts',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                            color: isEarned ? colorScheme.secondary : colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
         ],
       ),
     );
