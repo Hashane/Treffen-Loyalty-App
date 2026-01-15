@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:loyalty/widgets/flip_card.dart';
 import 'package:loyalty/widgets/offers_card.dart';
@@ -64,9 +65,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _progressController.forward();
     });
 
-    // Load data
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HomeProvider>().loadHomeData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      context.loaderOverlay.show();
+      try {
+        await context.read<HomeProvider>().loadHomeData();
+      } finally {
+        context.loaderOverlay.hide();
+      }
     });
   }
 
@@ -84,21 +89,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<HomeProvider>(
-        builder: (context, homeProvider, child) {
-          // Show loading state
-          if (homeProvider.isLoading && !homeProvider.isRefreshing) {
-            return _buildLoadingState();
-          }
+    return Consumer<HomeProvider>(
+      builder: (context, homeProvider, child) {
+        // Show error state
+        if (homeProvider.hasError) {
+          return _buildErrorState(homeProvider.errorMessage ?? 'An error occurred');
+        }
 
-          // Show error state
-          if (homeProvider.hasError) {
-            return _buildErrorState(homeProvider.errorMessage ?? 'An error occurred');
-          }
-
-          // Show content
-          return FadeTransition(
+        // Show content (loading is handled by ShellScreen overlay)
+        return Scaffold(
+          body: FadeTransition(
             opacity: _fadeAnimation,
             child: RefreshIndicator(
               onRefresh: _onRefresh,
@@ -111,10 +111,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   // Header with Points Card
                   SliverToBoxAdapter(
                     child: Column(
-                      children: [
-                        _buildHeader(homeProvider),
-                        _buildPointsCard(homeProvider),
-                      ],
+                      children: [_buildHeader(homeProvider), _buildPointsCard(homeProvider)],
                     ),
                   ),
 
@@ -128,42 +125,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.secondary,
-          ],
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              color: Colors.white,
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Loading your rewards...',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16.sp,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -173,10 +137,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         gradient: LinearGradient(
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
-          colors: [
-            Theme.of(context).colorScheme.primary,
-            Theme.of(context).colorScheme.secondary,
-          ],
+          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
         ),
       ),
       child: Center(
@@ -185,28 +146,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                color: Colors.white,
-                size: 64.sp,
-              ),
+              Icon(Icons.error_outline, color: Colors.white, size: 64.sp),
               SizedBox(height: 16.h),
               Text(
                 'Oops! Something went wrong',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 8.h),
               Text(
                 message,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  fontSize: 14.sp,
-                ),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14.sp),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 24.h),
@@ -276,10 +226,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                     Text(
                       '$displayTier Member',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 12.sp,
-                      ),
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12.sp),
                     ),
                   ],
                 ),
@@ -590,11 +537,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               itemBuilder: (context, index) {
                 final offer = offers[index];
                 return OffersCard(
-                  offer: {
-                    'title': offer.title,
-                    'store': offer.store,
-                    'image': offer.imageUrl,
-                  },
+                  offer: {'title': offer.title, 'store': offer.store, 'image': offer.imageUrl},
                 );
               },
             ),
