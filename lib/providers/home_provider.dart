@@ -5,19 +5,12 @@ import '../models/activity_model.dart';
 import '../models/tier_model.dart';
 import '../services/home_service.dart';
 
-enum HomeLoadingState {
-  initial,
-  loading,
-  loaded,
-  error,
-  refreshing,
-}
+enum HomeLoadingState { initial, loading, loaded, error, refreshing }
 
 class HomeProvider with ChangeNotifier {
   final HomeService _homeService;
 
-  HomeProvider({HomeService? homeService})
-      : _homeService = homeService ?? HomeService();
+  HomeProvider({HomeService? homeService}) : _homeService = homeService ?? HomeService();
 
   // State
   HomeLoadingState _state = HomeLoadingState.initial;
@@ -53,18 +46,18 @@ class HomeProvider with ChangeNotifier {
       }
       notifyListeners();
 
-      // Fetch all data in parallel for better performance
+      // Fetch user+tier combined, and offers/activities in parallel
       final results = await Future.wait([
-        _homeService.fetchUserProfile(),
-        _homeService.fetchTierInfo(),
+        _homeService.fetchUserWithTier(),
         _homeService.fetchFeaturedOffers(limit: 10),
         _homeService.fetchRecentActivity(limit: 10),
       ]);
 
-      _user = results[0] as UserModel?;
-      _tier = results[1] as TierModel?;
-      _offers = results[2] as List<OfferModel>;
-      _activities = results[3] as List<ActivityModel>;
+      final userTier = results[0] as ({UserModel? user, TierModel? tier});
+      _user = userTier.user;
+      _tier = userTier.tier;
+      _offers = results[1] as List<OfferModel>;
+      _activities = results[2] as List<ActivityModel>;
 
       _state = HomeLoadingState.loaded;
       _errorMessage = null;
@@ -74,46 +67,6 @@ class HomeProvider with ChangeNotifier {
       debugPrint('[HomeProvider] Error loading home data: $e');
     } finally {
       notifyListeners();
-    }
-  }
-
-  /// Load user profile separately
-  Future<void> loadUserProfile() async {
-    try {
-      _user = await _homeService.fetchUserProfile();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('[HomeProvider] Error loading user profile: $e');
-    }
-  }
-
-  /// Load tier info separately
-  Future<void> loadTierInfo() async {
-    try {
-      _tier = await _homeService.fetchTierInfo();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('[HomeProvider] Error loading tier info: $e');
-    }
-  }
-
-  /// Load offers separately
-  Future<void> loadOffers() async {
-    try {
-      _offers = await _homeService.fetchFeaturedOffers();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('[HomeProvider] Error loading offers: $e');
-    }
-  }
-
-  /// Load activities separately
-  Future<void> loadActivities() async {
-    try {
-      _activities = await _homeService.fetchRecentActivity();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('[HomeProvider] Error loading activities: $e');
     }
   }
 

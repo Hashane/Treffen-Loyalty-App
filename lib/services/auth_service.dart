@@ -26,7 +26,7 @@ class AuthService {
       if (resp.statusCode == 200) {
         final Map<String, dynamic> body = jsonDecode(resp.body);
 
-        final token = body['data']['token'] as String?;
+        final token = body['data']['access_token'] as String?;
         if (token != null && token.isNotEmpty) {
           // persist token securely
           await _secureStorage.write(key: 'access_token', value: token);

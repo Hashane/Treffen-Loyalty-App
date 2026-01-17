@@ -13,7 +13,7 @@ import 'package:loyalty/screens/voucher_details_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/home',
+    initialLocation: '/',
     routes: [
       GoRoute(
         path: '/',

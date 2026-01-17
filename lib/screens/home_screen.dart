@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:loyalty/widgets/flip_card.dart';
 import 'package:loyalty/widgets/offers_card.dart';
 import 'package:loyalty/widgets/treffen_rewards_card.dart';
+import 'package:loyalty/widgets/global_error_overlay.dart';
 import 'package:loyalty/providers/home_provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -66,12 +67,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      context.loaderOverlay.show();
-      try {
-        await context.read<HomeProvider>().loadHomeData();
-      } finally {
-        context.loaderOverlay.hide();
-      }
+      await _loadData();
     });
   }
 
@@ -83,20 +79,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  Future<void> _loadData() async {
+    context.loaderOverlay.show();
+    try {
+      await context.read<HomeProvider>().loadHomeData();
+      if (!mounted) return;
+      final homeProvider = context.read<HomeProvider>();
+      if (homeProvider.hasError) {
+        context.errorOverlay.show(
+          message: homeProvider.errorMessage ?? 'Failed to load data',
+          onRetry: _loadData,
+        );
+      }
+    } finally {
+      if (mounted) {
+        context.loaderOverlay.hide();
+      }
+    }
+  }
+
   Future<void> _onRefresh() async {
     await context.read<HomeProvider>().refresh();
+    if (!mounted) return;
+    final homeProvider = context.read<HomeProvider>();
+    if (homeProvider.hasError) {
+      context.errorOverlay.show(
+        message: homeProvider.errorMessage ?? 'Failed to refresh data',
+        onRetry: _onRefresh,
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeProvider>(
       builder: (context, homeProvider, child) {
-        // Show error state
-        if (homeProvider.hasError) {
-          return _buildErrorState(homeProvider.errorMessage ?? 'An error occurred');
-        }
-
-        // Show content (loading is handled by ShellScreen overlay)
         return Scaffold(
           body: FadeTransition(
             opacity: _fadeAnimation,
@@ -128,53 +145,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildErrorState(String message) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
-        ),
-      ),
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.all(24.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error_outline, color: Colors.white, size: 64.sp),
-              SizedBox(height: 16.h),
-              Text(
-                'Oops! Something went wrong',
-                style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                message,
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14.sp),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 24.h),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<HomeProvider>().loadHomeData();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Theme.of(context).colorScheme.primary,
-                  padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 16.h),
-                ),
-                child: Text('Try Again'),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -339,10 +309,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _buildPointsCard(HomeProvider homeProvider) {
     final user = homeProvider.user;
     final tier = homeProvider.tier;
-    final points = user?.points ?? 0.0;
+    final redeemablePoints = user?.currentPoints ?? 0.0;
+    final lifetimePoints = tier?.lifetimePoints ?? user?.lifetimePoints ?? 0.0;
     final currentTier = tier?.currentTier ?? user?.tier ?? 'Bronze';
     final nextTier = tier?.nextTier ?? 'Silver';
-    final pointsToNext = tier?.pointsToNext ?? 0;
+    final nextTierPoints = tier?.nextTierPoints ?? 0.0;
     final progress = tier?.progress ?? 0.0;
 
     // Update progress animation with real data
@@ -396,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total Points',
+                        'Redeemable Points',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 14.sp,
@@ -406,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ScaleTransition(
                         scale: _pointsScaleAnimation,
                         child: Text(
-                          points.toStringAsFixed(0),
+                          redeemablePoints.toStringAsFixed(0),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 40.sp,
@@ -446,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                       Text(
-                        '${pointsToNext.toStringAsFixed(0)} pts to $nextTier',
+                        '${lifetimePoints.toStringAsFixed(0)} / ${nextTierPoints.toStringAsFixed(0)} pts to $nextTier',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontSize: 14.sp,

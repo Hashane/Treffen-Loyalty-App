@@ -8,7 +8,7 @@ class ApiService {
   final FlutterSecureStorage _secureStorage;
 
   ApiService({FlutterSecureStorage? secureStorage})
-      : _secureStorage = secureStorage ?? const FlutterSecureStorage();
+    : _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   /// Get authentication token from secure storage
   Future<String?> _getAuthToken() async {
@@ -18,10 +18,7 @@ class ApiService {
   /// Build headers with authentication
   Future<Map<String, String>> _buildHeaders() async {
     final token = await _getAuthToken();
-    final headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
+    final headers = {'Content-Type': 'application/json', 'Accept': 'application/json'};
 
     if (token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
@@ -51,19 +48,12 @@ class ApiService {
       if (EnvConfig.enableLogging) {
         print('[API] Error: $e');
       }
-      return {
-        'success': false,
-        'message': 'Network error: ${e.toString()}',
-        'error': e.toString(),
-      };
+      return {'success': false, 'message': 'Network error: ${e.toString()}', 'error': e.toString()};
     }
   }
 
   /// Generic POST request handler
-  Future<Map<String, dynamic>> post(
-    String endpoint, {
-    Map<String, dynamic>? body,
-  }) async {
+  Future<Map<String, dynamic>> post(String endpoint, {Map<String, dynamic>? body}) async {
     try {
       final uri = Uri.parse('$_baseUrl$endpoint');
       final headers = await _buildHeaders();
@@ -88,19 +78,12 @@ class ApiService {
       if (EnvConfig.enableLogging) {
         print('[API] Error: $e');
       }
-      return {
-        'success': false,
-        'message': 'Network error: ${e.toString()}',
-        'error': e.toString(),
-      };
+      return {'success': false, 'message': 'Network error: ${e.toString()}', 'error': e.toString()};
     }
   }
 
   /// Generic PUT request handler
-  Future<Map<String, dynamic>> put(
-    String endpoint, {
-    Map<String, dynamic>? body,
-  }) async {
+  Future<Map<String, dynamic>> put(String endpoint, {Map<String, dynamic>? body}) async {
     try {
       final uri = Uri.parse('$_baseUrl$endpoint');
       final headers = await _buildHeaders();
@@ -125,11 +108,7 @@ class ApiService {
       if (EnvConfig.enableLogging) {
         print('[API] Error: $e');
       }
-      return {
-        'success': false,
-        'message': 'Network error: ${e.toString()}',
-        'error': e.toString(),
-      };
+      return {'success': false, 'message': 'Network error: ${e.toString()}', 'error': e.toString()};
     }
   }
 
@@ -154,11 +133,7 @@ class ApiService {
       if (EnvConfig.enableLogging) {
         print('[API] Error: $e');
       }
-      return {
-        'success': false,
-        'message': 'Network error: ${e.toString()}',
-        'error': e.toString(),
-      };
+      return {'success': false, 'message': 'Network error: ${e.toString()}', 'error': e.toString()};
     }
   }
 

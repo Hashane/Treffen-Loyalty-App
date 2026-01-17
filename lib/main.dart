@@ -9,6 +9,7 @@ import 'core/config/env_config.dart';
 import 'core/routes/app_router.dart';
 import 'providers/home_provider.dart';
 import 'widgets/animated_logo_loader.dart';
+import 'widgets/global_error_overlay.dart';
 
 const String _envFromDefine = String.fromEnvironment('ENV', defaultValue: 'dev');
 
@@ -52,14 +53,16 @@ class _MyAppState extends State<MyApp> {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, _) {
-          return GlobalLoaderOverlay(
-            overlayWidgetBuilder: (_) => const _AppLoader(),
-            child: MaterialApp.router(
-              title: 'Loyalty App',
-              theme: AppTheme.light(),
-              darkTheme: AppTheme.dark(),
-              themeMode: ThemeController.instance.themeMode,
-              routerConfig: AppRouter.router,
+          return GlobalErrorOverlay(
+            child: GlobalLoaderOverlay(
+              overlayWidgetBuilder: (_) => const _AppLoader(),
+              child: MaterialApp.router(
+                title: 'Loyalty App',
+                theme: AppTheme.light(),
+                darkTheme: AppTheme.dark(),
+                themeMode: ThemeController.instance.themeMode,
+                routerConfig: AppRouter.router,
+              ),
             ),
           );
         },
